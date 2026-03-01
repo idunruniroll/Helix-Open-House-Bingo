@@ -47,7 +47,7 @@ for (let i = 0; i < GRID_SIZE; i++) {
     const title = cellTitles[idx];
     cell.textContent = title;
     if (isFreeSpace(i, j)) {
-      cell.classList.add("free-space", "stamped");
+      cell.classList.add("free-space", "marked");
       boardState[i][j] = { rowData: "", colData: "", diagData: "" };
       cell.addEventListener("click", () => showCellModal("Free Space", "Already completed!"));
     } else {
