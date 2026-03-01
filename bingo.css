@@ -14,10 +14,7 @@ body {
 }
 
 body {
-  background:
-    radial-gradient(900px 520px at 18% 18%, rgba(221, 180, 42, 0.22), transparent 62%),
-    radial-gradient(900px 520px at 82% 22%, rgba(165, 28, 56, 0.26), transparent 62%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.98));
+  background: #363636;
   background-attachment: fixed;
 }
 
