@@ -15,10 +15,19 @@ body {
 
 body {
   background:
-    radial-gradient(900px 520px at 18% 18%, rgba(221, 180, 42, 0.22), transparent 62%),
-    radial-gradient(900px 520px at 82% 22%, rgba(165, 28, 56, 0.26), transparent 62%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.98));
+    /* gold glow */
+    radial-gradient(900px 520px at 18% 18%, rgba(221, 180, 42, 0.45), transparent 60%),
+    radial-gradient(650px 420px at 35% 70%, rgba(221, 180, 42, 0.20), transparent 62%),
+
+    /* red glow */
+    radial-gradient(900px 520px at 82% 20%, rgba(165, 28, 56, 0.48), transparent 60%),
+    radial-gradient(650px 420px at 70% 75%, rgba(165, 28, 56, 0.22), transparent 62%),
+
+    /* base */
+    linear-gradient(180deg, rgba(18, 18, 20, 0.90), rgba(0, 0, 0, 0.98));
+
   background-attachment: fixed;
+  filter: saturate(1.25) contrast(1.05);
 }
 
 body,
