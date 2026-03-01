@@ -9,6 +9,28 @@ const FREE_SPACES = [
   { r: 2, c: 3 },
   { r: 5, c: 5 },
 ];
+
+const stations = names; // <-- your existing names array of real stations
+
+// Build a 36-long list of what each cell should display
+const cellTitles = new Array(GRID_SIZE * GRID_SIZE);
+let k = 0;
+for (let r = 0; r < GRID_SIZE; r++) {
+  for (let c = 0; c < GRID_SIZE; c++) {
+    const idx = r * GRID_SIZE + c;
+    if (isFreeSpace(r, c)) {
+      cellTitles[idx] = "FREE";
+    } else {
+      cellTitles[idx] = stations[k++] ?? ""; // fills next station
+    }
+  }
+}
+
+// Safety: you should have consumed exactly all stations
+if (k !== stations.length) {
+  console.warn(`Not all station names fit: used ${k} of ${stations.length}`);
+}
+
 let boardState = Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(null));
 const scans = JSON.parse(localStorage.getItem("scans") ?? "[]");
 const id = localStorage.getItem("id") ?? Math.random().toString().slice(2, 8).toUpperCase();
@@ -29,23 +51,14 @@ for (let i = 0; i < GRID_SIZE; i++) {
     cell.dataset.row = i;
     cell.dataset.col = j;
 
-    const title = names[i * GRID_SIZE + j];
+    const idx = i * GRID_SIZE + j;
+    const title = cellTitles[idx];
     cell.textContent = title;
-    const r = i, c = j;
-    if (isFreeSpace(r, c)) {
-      cell.classList.add("free-space");
-      cell.textContent = "FREE";
-      cell.classList.add("stamped"); // whatever class you use for “done”
-
-      // IMPORTANT: make it count as “filled” for bingo checks
+    if (isFreeSpace(i, j)) {
+      cell.classList.add("free-space", "stamped");
       boardState[i][j] = { rowData: "", colData: "", diagData: "" };
-
-      // optional: disable clicking
-      cell.addEventListener("click", () => {
-        showCellModal("Free Space", "This one is already completed!");
-      });
+      cell.addEventListener("click", () => showCellModal("Free Space", "Already completed!"));
     } else {
-      const title = names[r * GRID_SIZE + c];
       cell.addEventListener("click", () => showCellModal(title, items[title]));
     }
 

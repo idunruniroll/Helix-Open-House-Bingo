@@ -22,8 +22,6 @@ N = 6  # 6x6
 FREE_SPACES = {(0,0), (2,3), (5,5)}
 pt = "helix{fr33_r3fr3ShmeNT_h00r4y}"
 
-# You need 36 names for 6x6. Either extend this list to 36,
-# or use fallback filenames.
 stations = [
     'Helix Yogis',"Let's Meditate!",
     'Helix Bean & Leaf','Helix Heights','Table Tennis',
@@ -32,11 +30,12 @@ stations = [
     'Crochet Club','Dance Society','Helix Photography Club','Helix Gardening','Helix Oven & Stove',
     'heArt','Helix Knights','Helix Games','Helix Heritage','Helix House Board Friends Forever',
     'Helix Publicity','Helix Peer Circle','Tennis','Helix Footy','UTown Talk',
-    'UTown Booth','Helix Tour','Helix MURALS',
-    # add 3 more to reach 36, or delete stations usage below
-    'FREE 1','FREE 2','FREE 3'
+    'UTown Booth','Helix Tour','Helix MURALS'
 ]
-assert len(stations) == N*N, f"need {N*N} stations, got {len(stations)}"
+
+# ✅ Expect 36 - 3 = 33 stations
+expected = N*N - len(FREE_SPACES)
+assert len(stations) == expected, f"need {expected} stations (36 - free spaces), got {len(stations)}"
 
 os.makedirs("./qr_codes", exist_ok=True)
 
@@ -44,20 +43,18 @@ os.makedirs("./qr_codes", exist_ok=True)
 pairs = []
 cts = []
 
-pt_bytes = pt.encode().ljust(32, b"\0")[:32]  # match sha256 length
+pt_bytes = pt.encode().ljust(32, b"\0")[:32]  # match sha256 length (32)
 
 # 6 rows + 6 cols + 2 diagonals = 14 line keys
 for _ in range(N * 2 + 2):
     random_string = os.urandom(N * 8)          # 48 bytes -> 6 chunks
     hash_key = calculate_sha256(random_string) # 32 bytes
 
-    # ciphertext for this line (this is what goes into `cts`)
     ciphertext = xor(pt_bytes, hash_key)
     cts.append(ciphertext.hex())
 
-    # split random_string into N chunks of 8 bytes (for QR pieces)
     parts = [random_string[i:i+8].hex() for i in range(0, len(random_string), 8)]
-    assert len(parts) == N
+    assert len(parts) == N, f"expected {N} parts, got {len(parts)}"
     pairs.append(parts)
 
 rows = pairs[:N]           # rows[i][j]
@@ -65,16 +62,22 @@ cols = pairs[N:N*2]        # cols[j][i]
 diags = pairs[N*2:]        # diags[0][i], diags[1][i]
 
 print("cts =", cts)
+assert len(cts) == N*2 + 2, f"expected {N*2+2} cts, got {len(cts)}"
 
 # ---- MAKE QR CODES ----
+station_iter = iter(stations)
+generated = 0
+
 for i in range(N):
     for j in range(N):
         if (i, j) in FREE_SPACES:
             continue  # no QR for free cells
 
+        station_name = next(station_iter)
+
         parts = [str(i), str(j)]
-        parts.append(rows[i][j])      # row piece
-        parts.append(cols[j][i])      # col piece
+        parts.append(rows[i][j])
+        parts.append(cols[j][i])
 
         if i == j:
             parts.append(diags[0][i])
@@ -84,5 +87,17 @@ for i in range(N):
             parts.append("")
 
         payload = ";".join(parts)
-        filename = f"./qr_codes/{stations[i*N + j]}.png"
+        filename = f"./qr_codes/{station_name}.png"
         save_qr_code(payload, filename)
+        generated += 1
+
+# ✅ should generate 33 QR codes
+print("Generated QRs:", generated)
+assert generated == expected, f"expected {expected} QR codes, got {generated}"
+
+# ✅ ensure we consumed all station names
+try:
+    next(station_iter)
+    raise RuntimeError("Too many stations: some were not used")
+except StopIteration:
+    pass
