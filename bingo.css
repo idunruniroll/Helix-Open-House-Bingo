@@ -1,3 +1,26 @@
+:root {
+  --helix-red: #A51C38;
+  --helix-gold: #DDB42A;
+  --helix-black: #000000;
+  --panel: rgba(15, 15, 18, 0.72);
+  --panel2: rgba(15, 15, 18, 0.86);
+  --border: rgba(255, 255, 255, 0.10);
+}
+
+html,
+body {
+  height: 100vh;
+  margin: 0;
+}
+
+body {
+  background:
+    radial-gradient(900px 520px at 18% 18%, rgba(221, 180, 42, 0.22), transparent 62%),
+    radial-gradient(900px 520px at 82% 22%, rgba(165, 28, 56, 0.26), transparent 62%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.98));
+  background-attachment: fixed;
+}
+
 body,
 html {
   height: 100vh;
@@ -7,6 +30,15 @@ html {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+  padding: 24px;
+  max-width: 980px;
+  margin: 0 auto;
 }
 
 .bingo-container {
@@ -26,7 +58,7 @@ html {
 
 .bingo-cell {
   aspect-ratio: 1 / 1;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,13 +70,19 @@ html {
 }
 
 .bingo-cell.free-space {
-  font-weight: 700;
-  opacity: 0.9;
+  font-weight: 800;
+  opacity: 0.95;
+  border: 1px solid rgba(165, 28, 56, 0.55);
+}
+
+.bingo-cell.marked {
+  box-shadow: 0 0 0 2px rgba(221, 180, 42, 0.40) inset;
 }
 
 .marked {
-  background-color: #28a745;
-  color: white;
+  background-color: var(--helix-gold);
+  color: #111;
+  font-weight: 700;
 }
 
 #reader {
@@ -59,8 +97,9 @@ html {
   font-size: 14px;
   margin-top: 20px;
   padding: 10px;
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border);
+  border-radius: 10px;
 }
 
 .bingo_id {
