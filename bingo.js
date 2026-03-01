@@ -3,6 +3,7 @@ const scanButton = document.getElementById('scan-button');
 const bingoTab = document.getElementById('bingo-tab');
 const scanTab = document.getElementById('scan-tab');
 let scanner;
+let handlersAttached = false;
 let safeStart = async () => {};
 let safeStop = async () => {};
 const GRID_SIZE = 6;
@@ -110,29 +111,35 @@ function initializeScanner() {
     }
   };
 
-  safeStop = async () => {
-    if (!scanner || isStopping) return;
-    isStopping = true;
-    try {
-      await scanner.stop();
-      await scanner.clear?.();
-    } catch (e) {
-      console.warn("Camera stop failed (often harmless):", e);
-    } finally {
-      isStopping = false;
-    }
-  };
+safeStop = async () => {
+  if (!scanner || isStopping) return;
+  isStopping = true;
+  try {
+    try { await scanner.stop(); } catch (e) {}
+    try { await scanner.clear?.(); } catch (e) {}
+
+    const reader = document.getElementById("reader");
+    if (reader) reader.innerHTML = "";
+
+    // Recreate scanner cleanly
+    scanner = new Html5Qrcode("reader", { formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE] });
+  } finally {
+    isStopping = false;
+  }
+};
 
   // Start/stop when switching tabs
-  scanTab.addEventListener('shown.bs.tab', () => {
-    setTimeout(() => safeStart(), 200); // wait for tab to be visible
-  });
+  if (!handlersAttached) {
+    handlersAttached = true;
 
-  bingoTab.addEventListener('shown.bs.tab', () => {
-    safeStop();
-  });
+    scanTab.addEventListener('shown.bs.tab', () => {
+      setTimeout(() => safeStart(), 200);
+    });
 
-  console.log("Start Camera clicked");
+    bingoTab.addEventListener('shown.bs.tab', () => {
+      safeStop();
+    });
+  }
 }
 
 // Process QR code data
@@ -234,6 +241,18 @@ function decryptChallenge(bingoData, idx) {
 
 // Initialize scanner when the page loads
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("startCam")?.addEventListener("click", () => safeStart());
+  document.getElementById("startCam")?.addEventListener("click", () => {
+    console.log("Start Camera clicked");
+    safeStart();
+  });
+});
+window.addEventListener("pagehide", () => {
+  try { scanner?.stop(); } catch (e) {}
+  try { scanner?.clear?.(); } catch (e) {}
+});
+
+window.addEventListener("beforeunload", () => {
+  try { scanner?.stop(); } catch (e) {}
+  try { scanner?.clear?.(); } catch (e) {}
 });
 window.onload = initializeScanner;
