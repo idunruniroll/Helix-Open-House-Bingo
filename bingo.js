@@ -3,22 +3,52 @@ const scanButton = document.getElementById('scan-button');
 const bingoTab = document.getElementById('bingo-tab');
 const scanTab = document.getElementById('scan-tab');
 let scanner;
-let boardState = Array(5).fill().map(() => Array(5).fill(null));
+const GRID_SIZE = 6;
+const FREE_SPACES = [
+  { r: 0, c: 0 },
+  { r: 2, c: 3 },
+  { r: 5, c: 5 },
+];
+let boardState = Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(null));
 const scans = JSON.parse(localStorage.getItem("scans") ?? "[]");
 const id = localStorage.getItem("id") ?? Math.random().toString().slice(2, 8).toUpperCase();
 localStorage.setItem("scans", JSON.stringify(scans));
 localStorage.setItem("id", id);
 bingo_id.innerText = "Bingo ID: "+id;
 
+// Check free space
+function isFreeSpace(r, c) {
+  return FREE_SPACES.some(p => p.r === r && p.c === c);
+}
+
 // Create bingo board
-for (let i = 0; i < 5; i++) {
-  for (let j = 0; j < 5; j++) {
-    const cell = document.createElement('div');
-    cell.className = 'bingo-cell';
-    cell.textContent = names[i * 5 + j];
-    cell.addEventListener('click', () => showCellModal(names[i * 5 + j], items[names[i * 5 + j]]));
+for (let i = 0; i < GRID_SIZE; i++) {
+  for (let j = 0; j < GRID_SIZE; j++) {
+    const cell = document.createElement("div");
+    cell.className = "bingo-cell";
     cell.dataset.row = i;
     cell.dataset.col = j;
+
+    const title = names[i * GRID_SIZE + j];
+    cell.textContent = title;
+    const r = i, c = j;
+    if (isFreeSpace(r, c)) {
+      cell.classList.add("free-space");
+      cell.textContent = "FREE";
+      cell.classList.add("stamped"); // whatever class you use for “done”
+
+      // IMPORTANT: make it count as “filled” for bingo checks
+      boardState[i][j] = { rowData: "", colData: "", diagData: "" };
+
+      // optional: disable clicking
+      cell.addEventListener("click", () => {
+        showCellModal("Free Space", "This one is already completed!");
+      });
+    } else {
+      const title = names[r * GRID_SIZE + c];
+      cell.addEventListener("click", () => showCellModal(title, items[title]));
+    }
+
     bingoBoard.appendChild(cell);
   }
 }
@@ -62,11 +92,16 @@ function initializeScanner() {
 
 // Process QR code data
 function processQRCode(data, scanned = false) {
-  const [rowIndex, colIndex, rowData, colData, diagData] = data.split(';');
+  const [rowIndexS, colIndexS, rowData, colData, diagData] = data.split(';');
+  const rowIndex = parseInt(rowIndexS, 10);
+  const colIndex = parseInt(colIndexS, 10);
+
+  if (isFreeSpace(rowIndex, colIndex)) return;
   const cell = document.querySelector(`.bingo-cell[data-row="${rowIndex}"][data-col="${colIndex}"]`);
+
   if (cell) {
     if (!scanned) {
-      const name = names[parseInt(rowIndex) * 5 + parseInt(colIndex)];
+      const name = names[parseInt(rowIndex) * GRID_SIZE + parseInt(colIndex)];
       umami.track('Bingo Stamp - ' + name, {id});
     }
 
@@ -95,21 +130,20 @@ function checkBingo(row, col) {
   if (boardState.every(row => row[col] !== null)) {
     bingoData = boardState.map(row => row[col].colData).join('');
     console.log("Column Bingo!", bingoData);
-    i = col + 5;
+    i = col + GRID_SIZE;
   }
 
   // Check main diagonal
-  if (row === col && boardState.every((row, i) => row[i] !== null)) {
-    bingoData = boardState.map((row, i) => row[i].diagData).join('');
-    console.log("Main Diagonal Bingo!", bingoData);
-    i = 10;
+  if (row === col && boardState.every((r, idx) => r[idx] !== null)) {
+    bingoData = boardState.map((r, idx) => r[idx].diagData).join('');
+    i = 2 * GRID_SIZE;
   }
 
   // Check anti-diagonal
-  if (row + col === 4 && boardState.every((row, i) => row[4 - i] !== null)) {
-    bingoData = boardState.map((row, i) => row[4 - i].diagData).join('');
+  if (row + col === GRID_SIZE - 1 && boardState.every((row, i) => row[GRID_SIZE - 1 - i] !== null)) {
+    bingoData = boardState.map((row, i) => row[GRID_SIZE - 1 - i].diagData).join('');
     console.log("Anti-Diagonal Bingo!", bingoData);
-    i = 11;
+    i = 2 * GRID_SIZE + 1;
   }
 
   if (bingoData) {
@@ -148,7 +182,7 @@ function decryptChallenge(bingoData, idx) {
   console.log(cts[idx])
 
   const res = CryptoJS.enc.Hex.parse(xorHexStrings(hash.toString(), cts[idx])).toString(CryptoJS.enc.Utf8).replaceAll("\x00", "").replaceAll("DYNAMIC", id);
-  message.innerHTML = `Bingo! The flag is: <code>${res}</code>. Head over to the Greyhats booth to redeem your merch!`;
+  message.innerHTML = `Bingo! The flag is: <code>${res}</code>. Head over to the Helix office to redeem your merch!`;
 
   umami.track('Bingo Completed', {"id": id});
 }

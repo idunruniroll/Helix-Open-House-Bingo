@@ -18,7 +18,7 @@ html {
 
 .bingo-board {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 5px;
   width: 90vmin;
   max-width: 400px;
@@ -35,6 +35,11 @@ html {
   word-wrap: break-word;
   overflow-wrap: break-word;
   font-size: 80%;
+}
+
+.bingo-cell.free-space {
+  font-weight: 700;
+  opacity: 0.9;
 }
 
 .marked {

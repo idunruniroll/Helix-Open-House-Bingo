@@ -4,64 +4,71 @@ const fs     = require('fs');
 const path   = require('path');
 
 // ---- bring in your fixed arrays ----
-// 12 entries for a 5×5 board: 5 rows, 5 cols, main diag, anti‑diag
-const cts = [
-  'f8a07ca565ebf3a793f870750699f3387ed68ca7f69e9796a9834c5009beeb76',
-  '098a4fe52dc172db468ce64a197dbd2de33a4a72246da26250b3bc4de63baf7e',
-  '5aed6a963b835654ff7da8570fbb6beadce2c9a3406ac2ab031ac0237c2a9a70',
-  '7ca0d6ac181f8ce44bec75b972892c0bd7ab07d36475d03c393328a158e19c77',
-  '896a151f14aaebce26a4b42001b6b2a4e121f0d0425a107c2485e08e685c96a6',
-  '648a83cb97c056198cfcaa110a2e3cb989da6c9631b6e79781c5af0c71dfaf82',
-  '9781728a977c6d08190c86c8a0cebf491144b1f1b899448ad22da0d2f1bb1c81',
-  'f65e7227e41d60ef600a3275b2a8b5c8dabcb08a5d58f37b4e193d520eb4155f',
-  '29e1b171dbc43b8ec97984d3b48eb7b83561416c8e6ecbb8e43a0547e699b142',
-  'dbd02697295665f3c992eb0e2634e5096d45c812d058ad9ea2a534a8d4da0ff0',
-  'b5e0cf8b3b26f582e54b9efee5ea32b86f11ca1e18f142f6a35144aadb57a6b9',
-  '873f0569929f42d054671b932d104d1510aa66cdef73c6aa1e568cd6e43dd62a'
-];
+// 14 entries for a 6x6 board: 6 rows, 6 cols, main diag, anti‑diag
+cts = ['4326b63afe69aed147a42792505b7cc8e95a0d21f3b6b94063cb6d9f5ac15350',
+  '8aaee142475fb4227c7255a21fe9603cae628090d9dd42fe2388156701a10c08',
+  '878c124eaeee3d6d279c988ec206c092acba6187fdb7757fe124c136790d3944',
+  '034c8191fa8d00c6e1f46419455fab790ff307cbb1f582c4dd4343bea8081be1',
+  '81f9c89e609bd4eeacee834b729dfadd5969dc171aa1dd82417d512ef73a4737',
+  '1d2b08baef7564de72c0038c0efe39ef77291d45a160b781db8a3ddff7bcf053',
+  '5faecbf3ed5e93adacc2f0300e052da8d3864f976aacc06e9072e5198d34ca1e',
+  '8301e7045a0a318130b04d3685da5d4bf564dded4c4855b7be8dad75b9574cfe',
+  '34a82d6f6725db4e55a9273ecb03a43491098f6deed3ece9b9d3111b897a66cf',
+  '34b31fb0515abd72c89fbac395c20d09afaab046e325574c15cc0ad97486e0e5',
+  'bfdfc0b679b6d5ea707f5e5209f4f425cafab46711b10976cb9af2e15c4f9e7c',
+  '9526c5f5ece0f100a6703f2b32234d02cbaaadab88bff4e1d7917153f49f88ed',
+  '6ab485f207e4bd6792ceacafeb56eded57d9c3a55cb5426706d6f33c0bf69b58',
+  'e84439095c7f3da17e7184fd03395fe9791db299ef01d864e4a17549a224cec2']
 
-const names = [
-  'Helix Yogis','Let\'s Meditate!',
-  'Helix Bean & Leaf',
-  'Badminton',
-  'Table Tennis',
-  'Frisbee (Hucks)',
-  'Floorball',
-  'Helix Gym',
-  'Pickle Ball',
-  'Basketball',
-  'Running',
-  'Helix Heights',
-  'heart',
-  'Helix Band',
-  'Helix Photography Club',
-  'Dance Society',
-  'Crochet Club',
-  'Helix Gardening',
-  'Helix Oven & Stove',
-  'Helix Readers (book club)',
-  'Helix Knights',
-  'Helix Games',
-  'Helix Heritage',
-  'Helix House Board Friends Forever',
-  'Helix Publicity'
-];
+const names = ['Helix Yogis','Let\'s Meditate!',
+    'Helix Bean & Leaf',
+    'Helix Heights',
+    'Table Tennis',
+    'Frisbee (Hucks)',
+    'Floorball',
+    'Helix Gym',
+    'Pickle Ball',
+    'Basketball',
+    'Volleyball',
+    'Running',
+    'Badminton',
+    'Helix Readers',
+    'Helix Band',
+    'Crochet Club',
+    'Dance Society',
+    'Helix Photography Club',
+    'Helix Gardening',
+    'Helix Oven & Stove',
+    'heArt',
+    'Helix Knights',
+    'Helix Games',
+    'Helix Heritage',
+    'Helix House Board Friends Forever',
+    'Helix Publicity',
+    'Helix Peer Circle',
+    'Tennis',
+    'Helix Footy',
+    'UTown Talk',
+    'UTown Booth',
+    'Helix Tour',
+    'Helix MURALS'
+    ]
 
 // make sure output folder exists
 const outDir = path.resolve(__dirname, 'qr_output');
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
 
 (async () => {
-  for (let row = 0; row < 5; row++) {
-    for (let col = 0; col < 5; col++) {
-      const idx     = row * 5 + col;
-      const label   = names[idx].replace(/\s+/g,'_');
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let col = 0; col < GRID_SIZE; col++) {
+      const idx     = row * GRID_SIZE + col;
+       const label   = names[idx].replace(/\s+/g,'_');
       // pick your cts indices:
       const rowHash  = cts[row];
-      const colHash  = cts[5 + col];
+      const colHash  = cts[GRID_SIZE + col];
       const diagHash =
-        row === col            ? cts[10] :
-        row + col === 4        ? cts[11] :
+        row === col            ? cts[2 * GRID_SIZE] :
+        row + col === GRID_SIZE - 1 ? cts[2 * GRID_SIZE + 1] :
         '' ;
       const payload = [ row, col, rowHash, colHash, diagHash ].join(';');
 
