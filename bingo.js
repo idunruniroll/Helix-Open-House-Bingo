@@ -108,7 +108,6 @@ function initializeScanner() {
       isStarting = false;
     }
   }
-  document.getElementById("startCam")?.addEventListener("click", () => safeStart());
 
   async function safeStop() {
     if (!scanner || isStopping) return;
@@ -122,6 +121,8 @@ function initializeScanner() {
       isStopping = false;
     }
   }
+
+  document.getElementById("startCam")?.addEventListener("click", () => safeStart());
 
   // Start/stop when switching tabs
   scanTab.addEventListener('shown.bs.tab', () => {
