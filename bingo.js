@@ -10,26 +10,22 @@ const FREE_SPACES = [
   { r: 5, c: 5 },
 ];
 
-const stations = names; // <-- your existing names array of real stations
+function isFreeSpace(r, c) {
+  return FREE_SPACES.some(p => p.r === r && p.c === c);
+}
 
-// Build a 36-long list of what each cell should display
+const stations = names; // your real station list (33)
+
+// Build a 36-long list (FREE inserted, stations shifted)
 const cellTitles = new Array(GRID_SIZE * GRID_SIZE);
 let k = 0;
 for (let r = 0; r < GRID_SIZE; r++) {
   for (let c = 0; c < GRID_SIZE; c++) {
     const idx = r * GRID_SIZE + c;
-    if (isFreeSpace(r, c)) {
-      cellTitles[idx] = "FREE";
-    } else {
-      cellTitles[idx] = stations[k++] ?? ""; // fills next station
-    }
+    cellTitles[idx] = isFreeSpace(r, c) ? "FREE" : (stations[k++] ?? "");
   }
 }
-
-// Safety: you should have consumed exactly all stations
-if (k !== stations.length) {
-  console.warn(`Not all station names fit: used ${k} of ${stations.length}`);
-}
+if (k !== stations.length) console.warn(`Not all station names fit: used ${k} of ${stations.length}`);
 
 let boardState = Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(null));
 const scans = JSON.parse(localStorage.getItem("scans") ?? "[]");
@@ -38,10 +34,6 @@ localStorage.setItem("scans", JSON.stringify(scans));
 localStorage.setItem("id", id);
 bingo_id.innerText = "Bingo ID: "+id;
 
-// Check free space
-function isFreeSpace(r, c) {
-  return FREE_SPACES.some(p => p.r === r && p.c === c);
-}
 
 // Create bingo board
 for (let i = 0; i < GRID_SIZE; i++) {
@@ -59,7 +51,7 @@ for (let i = 0; i < GRID_SIZE; i++) {
       boardState[i][j] = { rowData: "", colData: "", diagData: "" };
       cell.addEventListener("click", () => showCellModal("Free Space", "Already completed!"));
     } else {
-      cell.addEventListener("click", () => showCellModal(title, items[title]));
+      cell.addEventListener("click", () => showCellModal(title, items[title] ?? ""));
     }
 
     bingoBoard.appendChild(cell);
@@ -114,7 +106,7 @@ function processQRCode(data, scanned = false) {
 
   if (cell) {
     if (!scanned) {
-      const name = names[parseInt(rowIndex) * GRID_SIZE + parseInt(colIndex)];
+      const name = cellTitles[rowIndex * GRID_SIZE + colIndex];
       umami.track('Bingo Stamp - ' + name, {id});
     }
 
@@ -123,7 +115,7 @@ function processQRCode(data, scanned = false) {
     cell.dataset.colData = colData;
     cell.dataset.diagData = diagData;
     boardState[rowIndex][colIndex] = { rowData, colData, diagData };
-    checkBingo(parseInt(rowIndex), parseInt(colIndex));
+    checkBingo(rowIndex, colIndex);
   }
 }
 
