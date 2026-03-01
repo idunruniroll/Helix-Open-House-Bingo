@@ -3,6 +3,8 @@ const scanButton = document.getElementById('scan-button');
 const bingoTab = document.getElementById('bingo-tab');
 const scanTab = document.getElementById('scan-tab');
 let scanner;
+let safeStart = async () => {};
+let safeStop = async () => {};
 const GRID_SIZE = 6;
 const FREE_SPACES = [
   { r: 0, c: 0 },
@@ -90,11 +92,10 @@ function initializeScanner() {
   let isStarting = false;
   let isStopping = false;
 
-  async function safeStart() {
+  safeStart = async () => {
     if (!scanner || isStarting) return;
     isStarting = true;
     try {
-      // Try back camera first
       await scanner.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
     } catch (e1) {
       console.warn("Environment camera failed, trying user camera...", e1);
@@ -107,22 +108,20 @@ function initializeScanner() {
     } finally {
       isStarting = false;
     }
-  }
+  };
 
-  async function safeStop() {
+  safeStop = async () => {
     if (!scanner || isStopping) return;
     isStopping = true;
     try {
-      await scanner.stop();   // stop() is async
-      await scanner.clear?.(); // optional (if supported)
+      await scanner.stop();
+      await scanner.clear?.();
     } catch (e) {
       console.warn("Camera stop failed (often harmless):", e);
     } finally {
       isStopping = false;
     }
-  }
-
-  document.getElementById("startCam")?.addEventListener("click", () => safeStart());
+  };
 
   // Start/stop when switching tabs
   scanTab.addEventListener('shown.bs.tab', () => {
@@ -132,6 +131,8 @@ function initializeScanner() {
   bingoTab.addEventListener('shown.bs.tab', () => {
     safeStop();
   });
+
+  console.log("Start Camera clicked");
 }
 
 // Process QR code data
@@ -232,4 +233,7 @@ function decryptChallenge(bingoData, idx) {
 }
 
 // Initialize scanner when the page loads
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("startCam")?.addEventListener("click", () => safeStart());
+});
 window.onload = initializeScanner;
