@@ -68,6 +68,23 @@ assert len(cts) == N*2 + 2, f"expected {N*2+2} cts, got {len(cts)}"
 station_iter = iter(stations)
 generated = 0
 
+# ---- PRINT FREE CELL DATA FOR JS ----
+free_data = {}
+for (r, c) in FREE_SPACES:
+    diag_part = ""
+    if r == c:
+        diag_part = diags[0][r]
+    elif r == N - 1 - c:
+        diag_part = diags[1][r]
+
+    free_data[f"{r},{c}"] = {
+        "rowData": rows[r][c],
+        "colData": cols[c][r],
+        "diagData": diag_part
+    }
+
+print("FREE_DATA =", free_data)
+
 for i in range(N):
     for j in range(N):
         if (i, j) in FREE_SPACES:

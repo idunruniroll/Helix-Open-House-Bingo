@@ -35,8 +35,11 @@ const scans = JSON.parse(localStorage.getItem("scans") ?? "[]");
 const id = localStorage.getItem("id") ?? Math.random().toString().slice(2, 8).toUpperCase();
 localStorage.setItem("scans", JSON.stringify(scans));
 localStorage.setItem("id", id);
-bingo_id.innerText = "Bingo ID: "+id;
+bingo_id.innerText = "Bingo ID: " + id;
 
+FREE_DATA = {'2,3': {'rowData': '16bcc3a54b6b682a', 'colData': '0900d664a91fb923', 'diagData': 'fc4c82baaf94b888'},
+'5,5': {'rowData': '38b95b590856a179', 'colData': 'ba4d1e7c545169a3', 'diagData': 'fd758665780ac73a'},
+'0,0': {'rowData': '695b11d369d1e362', 'colData': 'fe7f63020e3bae5d', 'diagData': '932b24ad639e5631'}}
 
 // Create bingo board
 for (let i = 0; i < GRID_SIZE; i++) {
@@ -51,7 +54,8 @@ for (let i = 0; i < GRID_SIZE; i++) {
     cell.textContent = title;
     if (isFreeSpace(i, j)) {
       cell.classList.add("free-space", "marked");
-      boardState[i][j] = { rowData: "", colData: "", diagData: "" };
+      const key = `${i},${j}`;
+      boardState[i][j] = FREE_DATA[key];   
       cell.addEventListener("click", () => showCellModal("Free Space", "Already completed!"));
     } else {
       cell.addEventListener("click", () => showCellModal(title, items[title] ?? ""));
