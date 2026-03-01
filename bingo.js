@@ -235,7 +235,12 @@ function decryptChallenge(bingoData, idx) {
 
   const res = CryptoJS.enc.Hex.parse(xorHexStrings(hash.toString(), cts[idx])).toString(CryptoJS.enc.Utf8).replaceAll("\x00", "").replaceAll("DYNAMIC", id);
   message.innerHTML = `Bingo! The flag is: <code>${res}</code>. Head over to the Helix office to redeem your merch!`;
-
+  // Show "Bingo Completed" popup once
+  if (!localStorage.getItem("bingoCompletedShown")) {
+    localStorage.setItem("bingoCompletedShown", "1");
+    const modal = new bootstrap.Modal(document.getElementById("bingoModal"));
+    modal.show();
+  }
   umami.track('Bingo Completed', {"id": id});
 }
 
