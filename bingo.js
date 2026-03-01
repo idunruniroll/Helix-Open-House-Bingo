@@ -76,22 +76,60 @@ function initializeScanner() {
     processQRCode(scan, true);
   }
   scanner = new Html5Qrcode("reader", { formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE] });
+
   const qrCodeSuccessCallback = (decodedText, decodedResult) => {
     console.log(`Code matched = ${decodedText}`, decodedResult);
     scans.push(decodedText);
     localStorage.setItem("scans", JSON.stringify(scans));
-    bingoTab.click(); // Switch back to the Bingo tab
+    bingoTab.click();
     processQRCode(decodedText);
   };
+
   const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
+  let isStarting = false;
+  let isStopping = false;
 
+  async function safeStart() {
+    if (!scanner || isStarting) return;
+    isStarting = true;
+    try {
+      // Try back camera first
+      await scanner.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
+    } catch (e1) {
+      console.warn("Environment camera failed, trying user camera...", e1);
+      try {
+        await scanner.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
+      } catch (e2) {
+        console.error("Camera start failed:", e2);
+        alert("Could not start camera. Check browser permissions and try again.");
+      }
+    } finally {
+      isStarting = false;
+    }
+  }
+  document.getElementById("startCam")?.addEventListener("click", () => safeStart());
+
+  async function safeStop() {
+    if (!scanner || isStopping) return;
+    isStopping = true;
+    try {
+      await scanner.stop();   // stop() is async
+      await scanner.clear?.(); // optional (if supported)
+    } catch (e) {
+      console.warn("Camera stop failed (often harmless):", e);
+    } finally {
+      isStopping = false;
+    }
+  }
+
+  // Start/stop when switching tabs
   scanTab.addEventListener('shown.bs.tab', () => {
-    scanner.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
+    setTimeout(() => safeStart(), 200); // wait for tab to be visible
   });
 
   bingoTab.addEventListener('shown.bs.tab', () => {
-    scanner.stop()
+    safeStop();
   });
 }
 
