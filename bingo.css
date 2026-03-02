@@ -2,46 +2,70 @@
   --helix-red: #A51C38;
   --helix-gold: #DDB42A;
   --helix-black: #000000;
-  --panel: rgba(15, 15, 18, 0.72);
-  --panel2: rgba(15, 15, 18, 0.86);
   --border: rgba(255, 255, 255, 0.10);
 }
 
-body,
-html {
-  height: 100vh;
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  /* remove any page background */
 }
 
+/* Center the whole app on the page */
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Main wrapper: centered + no background/glass */
 .main-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  /* centralise horizontally */
+  justify-content: center;
+  /* centralise vertically within container */
   min-height: 100vh;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+  width: min(980px, 100%);
+  margin: 0;
   padding: 24px;
-  max-width: 980px;
-  margin: 0 auto;
+
+  background: transparent;
+  /* remove background */
+  border: none;
+  /* remove panel border */
+  border-radius: 0;
+  backdrop-filter: none;
+  /* remove blur */
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  /* remove shadow */
 }
 
+/* Center bingo area */
 .bingo-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  width: 100%;
   min-height: 60vh;
 }
 
+/* Center board and keep sizing */
 .bingo-board {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 5px;
   width: 90vmin;
   max-width: 400px;
+  margin: 0 auto;
 }
 
+/* Center text inside cells */
 .bingo-cell {
   aspect-ratio: 1 / 1;
   border: 1px solid var(--border);
@@ -55,6 +79,7 @@ html {
   font-size: 80%;
 }
 
+/* Keep “free space” styling but no backgrounds added */
 .bingo-cell.free-space {
   font-weight: 800;
   opacity: 0.95;
@@ -65,33 +90,168 @@ html {
   box-shadow: 0 0 0 2px rgba(221, 180, 42, 0.40) inset;
 }
 
+/* Marked state background stays (remove this too if you want ZERO backgrounds anywhere) */
 .marked {
   background-color: var(--helix-gold);
   color: #111;
   font-weight: 700;
 }
 
+/* Center reader */
 #reader {
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
 }
 
+/* Message: remove background as requested */
 .bingo-message {
   text-align: center;
   max-width: 80vw;
   font-size: 14px;
   margin-top: 20px;
   padding: 10px;
-  background-color: rgba(0, 0, 0, 0.35);
+
+  background: transparent;
+  /* removed */
   border: 1px solid var(--border);
   border-radius: 10px;
 }
 
 .bingo_id {
   font-size: 24px;
+  text-align: center;
 }
 
+@media only screen and (max-width: 600px) {
+  .bingo-message {
+    max-width: 90vw;
+  }
+}
+:root {
+  --helix-red: #A51C38;
+  --helix-gold: #DDB42A;
+  --helix-black: #000000;
+  --border: rgba(255, 255, 255, 0.10);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  /* remove any page background */
+}
+
+/* Center the whole app on the page */
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Main wrapper: centered + no background/glass */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* centralise horizontally */
+  justify-content: center;
+  /* centralise vertically within container */
+  min-height: 100vh;
+  width: min(980px, 100%);
+  margin: 0;
+  padding: 24px;
+
+  background: transparent;
+  /* remove background */
+  border: none;
+  /* remove panel border */
+  border-radius: 0;
+  backdrop-filter: none;
+  /* remove blur */
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  /* remove shadow */
+}
+
+/* Center bingo area */
+.bingo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 60vh;
+}
+
+/* Center board and keep sizing */
+.bingo-board {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+  width: 90vmin;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Center text inside cells */
+.bingo-cell {
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 80%;
+}
+
+/* Keep “free space” styling but no backgrounds added */
+.bingo-cell.free-space {
+  font-weight: 800;
+  opacity: 0.95;
+  border: 1px solid rgba(165, 28, 56, 0.55);
+}
+
+.bingo-cell.marked {
+  box-shadow: 0 0 0 2px rgba(221, 180, 42, 0.40) inset;
+}
+
+/* Marked state background stays (remove this too if you want ZERO backgrounds anywhere) */
+.marked {
+  background-color: var(--helix-gold);
+  color: #111;
+  font-weight: 700;
+}
+
+/* Center reader */
+#reader {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Message: remove background as requested */
+.bingo-message {
+  text-align: center;
+  max-width: 80vw;
+  font-size: 14px;
+  margin-top: 20px;
+  padding: 10px;
+
+  background: transparent;
+  /* removed */
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.bingo_id {
+  font-size: 24px;
+  text-align: center;
+}
 
 @media only screen and (max-width: 600px) {
   .bingo-message {
