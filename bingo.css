@@ -1,67 +1,127 @@
+:root {
+  --helix-red: #A51C38;
+  --helix-gold: #DDB42A;
+  --helix-black: #000000;
+
+  --bg: #0b0c10;
+  /* dark theme background */
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.75);
+  --border: rgba(255, 255, 255, 0.10);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
 /* Center everything */
 body {
-  min-height: 100vh;
-  margin: 0;
-  display: grid;
-  place-items: center;
-  background: #0b0c10;
-  color: rgba(255, 255, 255, 0.92);
-}
-
-/* Keep layout centered + flexible */
-.main-container {
-  width: min(980px, 100%);
-  padding: 24px;
-  margin: 0 auto;
-}
-
-/* Center the bingo section */
-.bingo-container {
-  width: 100%;
-  display: grid;
-  place-items: center;
-}
-
-/* Responsive board: stays like before, scales nicely */
-.bingo-board {
-  /* clamp(min, preferred, max) */
-  width: clamp(280px, 85vmin, 420px);
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: clamp(3px, 0.7vmin, 6px);
-}
-
-/* Make every cell a true square + readable text */
-.bingo-cell {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  background: transparent;
-
-  padding: clamp(4px, 0.8vmin, 8px);
-
-  /* responsive font size */
-  font-size: clamp(9px, 1.6vmin, 12px);
-  line-height: 1.15;
-
-  word-break: break-word;
-  overflow-wrap: anywhere;
 }
 
-/* keep your existing marked styles */
+/* Main wrapper: centered, no panel background */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 100vh;
+  width: min(980px, 100%);
+  padding: 24px;
+
+  background: transparent;
+  /* keep no panel background */
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.bingo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 60vh;
+}
+
+.bingo-board {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+  width: 90vmin;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.bingo-cell {
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 80%;
+  color: var(--text);
+  background: transparent;
+}
+
 .bingo-cell.free-space {
   font-weight: 800;
+  opacity: 0.95;
   border: 1px solid rgba(165, 28, 56, 0.55);
 }
 
+.bingo-cell.marked {
+  box-shadow: 0 0 0 2px rgba(221, 180, 42, 0.40) inset;
+}
+
+/* Marked tiles: keep visible highlight */
 .marked {
-  background-color: #DDB42A;
+  background-color: var(--helix-gold);
   color: #111;
   font-weight: 700;
+}
+
+#reader {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.bingo-message {
+  text-align: center;
+  max-width: 80vw;
+  font-size: 14px;
+  margin-top: 20px;
+  padding: 10px;
+
+  background: rgba(255, 255, 255, 0.04);
+  /* subtle dark-theme card */
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+}
+
+.bingo_id {
+  font-size: 24px;
+  text-align: center;
+}
+
+@media only screen and (max-width: 600px) {
+  .bingo-message {
+    max-width: 90vw;
+  }
 }
