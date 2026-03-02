@@ -1,57 +1,67 @@
-/* 1) Make sizing predictable */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-/* 2) Center the whole app robustly (no flex + scrollbar drift) */
-html,
+/* Center everything */
 body {
-  min-height: 100%;
+  min-height: 100vh;
   margin: 0;
-}
-
-body {
   display: grid;
   place-items: center;
   background: #0b0c10;
   color: rgba(255, 255, 255, 0.92);
-
-  /* helps prevent tiny horizontal shifts */
-  overflow-x: hidden;
-  scrollbar-gutter: stable;
 }
 
-/* 3) Main container stays centered and flexible */
+/* Keep layout centered + flexible */
 .main-container {
   width: min(980px, 100%);
   padding: 24px;
-  margin-inline: auto;
-
-  background: transparent;
-  border: none;
-  box-shadow: none;
+  margin: 0 auto;
 }
 
-/* 4) Center bingo content regardless of screen size */
+/* Center the bingo section */
 .bingo-container {
   width: 100%;
   display: grid;
   place-items: center;
 }
 
-/* 5) Center the board itself */
+/* Responsive board: stays like before, scales nicely */
 .bingo-board {
-  width: min(90vmin, 400px);
-  max-width: none;
-  /* not needed when using min() */
-  margin: 0;
-  /* grid centering handles it */
-  justify-self: center;
-  align-self: center;
-
+  /* clamp(min, preferred, max) */
+  width: clamp(280px, 85vmin, 420px);
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 5px;
+  gap: clamp(3px, 0.7vmin, 6px);
+}
+
+/* Make every cell a true square + readable text */
+.bingo-cell {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: transparent;
+
+  padding: clamp(4px, 0.8vmin, 8px);
+
+  /* responsive font size */
+  font-size: clamp(9px, 1.6vmin, 12px);
+  line-height: 1.15;
+
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* keep your existing marked styles */
+.bingo-cell.free-space {
+  font-weight: 800;
+  border: 1px solid rgba(165, 28, 56, 0.55);
+}
+
+.marked {
+  background-color: #DDB42A;
+  color: #111;
+  font-weight: 700;
 }
